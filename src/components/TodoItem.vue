@@ -1,34 +1,52 @@
 <template>
-  <li>
+  <li :class="liClass" @dblclick="toggleEditMode">
     <div class="view">
-      <input class="toggle" type="checkbox" />
+      <input class="toggle" type="checkbox" v-model="item.isCompleted" />
       <label class="label">{{ item.text }}</label>
-      <button class="destroy"></button>
+      <button class="destroy" @click="deleteItem(item.key)"></button>
     </div>
-    <input class="edit" value="새로운 타이틀" />
+    <input
+      class="edit"
+      value="새로운 타이틀"
+      v-model="item.text"
+      @keyup.enter="updateItemText(item.key, item.text)"
+    />
   </li>
-  <!-- <li class="editing">
-    <div class="view">
-      <input class="toggle" type="checkbox" />
-      <label class="label">완료된 타이틀</label>
-      <button class="destroy"></button>
-    </div>
-    <input class="edit" value="완료된 타이틀" />
-  </li>
-  <li class="completed">
-    <div class="view">
-      <input class="toggle" type="checkbox" checked />
-      <label class="label">완료된 타이틀</label>
-      <button class="destroy"></button>
-    </div>
-    <input class="edit" value="완료된 타이틀" />
-  </li> -->
 </template>
 
 <script>
+import TodoService from "../services/TodoService";
+
 export default {
   props: {
-    item: Object,
+    item: {
+      text: String,
+      key: String,
+      isCompleted: Boolean,
+    },
+  },
+  data() {
+    return { nowEditing: false };
+  },
+  methods: {
+    updateItemText(key, text) {
+      TodoService.updateItemText(key, text);
+      this.toggleEditMode();
+    },
+    deleteItem(key) {
+      TodoService.deleteItem(key);
+    },
+
+    toggleEditMode() {
+      this.nowEditing = !this.nowEditing;
+    },
+  },
+  computed: {
+    liClass() {
+      if (!this.nowEditing && this.item.isCompleted) return "completed";
+      if (this.nowEditing) return "editing";
+      return "";
+    },
   },
 };
 </script>

@@ -14,7 +14,7 @@ export default {
   },
   computed: {
     items() {
-      return TodoService.state.items;
+      return TodoService.getFilteredItemsByMode();
     },
   },
 };
